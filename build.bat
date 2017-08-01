@@ -4,6 +4,16 @@ setlocal EnableDelayedExpansion
 set PROGFILES=%ProgramFiles%
 if not "%ProgramFiles(x86)%" == "" set PROGFILES=%ProgramFiles(x86)%
 
+REM Check if Visual Studio 2017 is installed
+set MSVCDIR="%PROGFILES%\Microsoft Visual Studio\2017"
+set VCVARSALLPATH="%PROGFILES%\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"        
+if exist %MSVCDIR% (
+  if exist %VCVARSALLPATH% (
+   	set COMPILER_VER="2017"
+        echo Using Visual Studio 2017
+	goto setup_env
+  )
+)
 REM Check if Visual Studio 2015 is installed
 set MSVCDIR="%PROGFILES%\Microsoft Visual Studio 14.0"
 set VCVARSALLPATH="%PROGFILES%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"        
@@ -58,29 +68,7 @@ if exist %MSVCDIR% (
   )
 )
 
-REM Check if Visual Studio 2005 is installed
-set MSVCDIR="%PROGFILES%\Microsoft Visual Studio 8"
-set VCVARSALLPATH="%PROGFILES%\Microsoft Visual Studio 8\VC\vcvarsall.bat"
-if exist %MSVCDIR% (
-  if exist %VCVARSALLPATH% (
-	set COMPILER_VER="2005"
-    echo Using Visual Studio 2005
-	goto setup_env
-  )
-) 
-
-REM Check if Visual Studio 6 is installed
-set MSVCDIR="%PROGFILES%\Microsoft Visual Studio\VC98"
-set VCVARSALLPATH="%PROGFILES%\Microsoft Visual Studio\VC98\vcvarsall.bat"
-if exist %MSVCDIR% (
-  if exist %VCVARSALLPATH% (
-	set COMPILER_VER="6"
-    echo Using Visual Studio 6
-	goto setup_env
-  )
-) 
-
-echo No compiler : Microsoft Visual Studio (6, 2005, 2008, 2010, 2012, 2013 or 2015) is not installed.
+echo No compiler : Microsoft Visual Studio (6, 2005, 2008, 2010, 2012, 2013, 2015 or 2017) is not installed.
 goto end
 
 :setup_env
@@ -99,7 +87,7 @@ set RM="%CD%\bin\unxutils\rm.exe"
 set CP="%CD%\bin\unxutils\cp.exe"
 set MKDIR="%CD%\bin\unxutils\mkdir.exe"
 set SEVEN_ZIP="%CD%\bin\7-zip\7za.exe"
-set WGET="%CD%\bin\unxutils\wget.exe"
+set WGET="%CD%\bin\wget\wget.exe"
 set XIDEL="%CD%\bin\xidel\xidel.exe"
 
 REM Housekeeping
@@ -118,22 +106,12 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 REM Download latest curl and rename to curl.zip
 echo Downloading latest curl...
-%WGET% "http://curl.haxx.se%url%" -O curl.zip
+%WGET% --no-check-certificate "http://curl.haxx.se%url%" -O curl.zip
 
 REM Extract downloaded zip file to tmp_libcurl
 %SEVEN_ZIP% x curl.zip -y -otmp_libcurl | FIND /V "ing  " | FIND /V "Igor Pavlov"
 
 cd tmp_libcurl\curl-*\winbuild
-
-if %COMPILER_VER% == "6" (
-	set VCVERSION = 6
-	goto buildnow
-)
-
-if %COMPILER_VER% == "2005" (
-	set VCVERSION = 8
-	goto buildnow
-)
 
 if %COMPILER_VER% == "2008" (
 	set VCVERSION = 9
@@ -160,10 +138,15 @@ if %COMPILER_VER% == "2015" (
 	goto buildnow
 )
 
+if %COMPILER_VER% == "2017" (
+	set VCVERSION = 14
+	goto buildnow
+)
+
 :buildnow
 REM Build!
-echo "%MSVCDIR%\VC\vcvarsall.bat"
-call %MSVCDIR%\VC\vcvarsall.bat x86
+echo "%VCVARSALLPATH%"
+call %VCVARSALLPATH% x86
 echo Compiling dll-debug-x86 version...
 nmake /f Makefile.vc mode=dll VC=%VCVERSION% DEBUG=yes
 
@@ -176,7 +159,7 @@ nmake /f Makefile.vc mode=static VC=%VCVERSION% DEBUG=yes
 echo Compiling static-release-x86 version...
 nmake /f Makefile.vc mode=static VC=%VCVERSION% DEBUG=no
 
-call %MSVCDIR%\VC\vcvarsall.bat x64
+call %VCVARSALLPATH% x64
 echo Compiling dll-debug-x64 version...
 nmake /f Makefile.vc mode=dll VC=%VCVERSION% DEBUG=yes MACHINE=x64
 

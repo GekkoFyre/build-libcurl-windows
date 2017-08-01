@@ -1,23 +1,25 @@
-Auto download & compile libcurl
------------
-This batch script will automatically download the latest libcurl source code and build it using Visual Studio compiler.
+Auto download and compile libcurl
+=================================
+This batch script will automatically download the latest libcurl source code and build it with the Visual Studio C/C++ compiler, using the x86_64 architecture.
+
+Please note that this has been forked from [***blackrosezy***](https://github.com/blackrosezy/build-libcurl-windows), who was the original author of this project. [phobos-dthorga](https://github.com/phobos-dthorga) has added support for later versions of *Microsoft Visual Studio* and updated the included *wget* binary accordingly, so that it is capable of downloading the [libcurl](https://curl.haxx.se/libcurl/) source code without the HTTPS errors of the older *wget* binary.
 
 Supported Visual Studio are:
-*  Visual C++ 6 (require Windows Server 2003 Platform SDK released in February 2003)
-*  Visual Studio 2005
 *  Visual Studio 2008
 *  Visual Studio 2010
 *  Visual Studio 2012
-*  Visual Studio 2013 [![Build status](https://ci.appveyor.com/api/projects/status/1837jha0re1vbtw5?svg=true)](https://ci.appveyor.com/project/blackrosezy/build-libcurl-windows)
-*  Visual Studio 2015 [![Build status](https://ci.appveyor.com/api/projects/status/ykm8b06h3x7855eo?svg=true)](https://ci.appveyor.com/project/blackrosezy/build-libcurl-windows-unln0)
+*  Visual Studio 2013
+*  Visual Studio 2015
+* Visual Studio 2017 (support added by [phobos-dthorga](https://github.com/phobos-dthorga))
 
 
 *Note-1*: All version of **Visual Studio express are unsupported**.
 
 *Note-2*: This script is using third-party open source software
-* `bin/7-zip` http://www.7-zip.org/download.html
-* `bin/unxutils` http://sourceforge.net/projects/unxutils/
-* `bin/xidel` http://sourceforge.net/projects/videlibri/files/Xidel/
+* `bin/7-zip` http://www.7-zip.org/
+* `bin/unxutils` http://unxutils.sourceforge.net/
+* `bin/xidel` http://www.videlibri.de/xidel.html
+* `bin/wget` https://www.gnu.org/software/wget/ (see the included *LICENSES* folder for the additional libraries that were required)
 
 Usage :
 
